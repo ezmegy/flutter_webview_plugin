@@ -48,4 +48,24 @@ public class BrowserClient extends WebViewClient {
         data.put("code", Integer.toString(errorResponse.getStatusCode()));
         FlutterWebviewPlugin.channel.invokeMethod("onHttpError", data);
     }
+
+    ///Block loading of .pdf resources
+
+    @Override
+    public void onLoadResource(WebView view, String url) {
+
+        String postfix = url.substring(url.length() - 4, url.length());
+        if (postfix.equals(".pdf")) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("url", url);
+            FlutterWebviewPlugin.channel.invokeMethod("onUrlBlocked", data);
+        } else {
+            super.onLoadResource(view, url);
+        }
+
+    }
+
+
+
+
 }

@@ -30,6 +30,8 @@ class FlutterWebviewPlugin {
   final _onScrollYChanged = StreamController<double>.broadcast();
   final _onHttpError = StreamController<WebViewHttpError>.broadcast();
 
+  final _onUrlBlocked = StreamController<String>.broadcast();
+
   Future<Null> _handleMessages(MethodCall call) async {
     switch (call.method) {
       case 'onDestroy':
@@ -54,6 +56,11 @@ class FlutterWebviewPlugin {
       case 'onHttpError':
         _onHttpError.add(WebViewHttpError(call.arguments['code'], call.arguments['url']));
         break;
+
+      case 'onUrlBlocked':
+        _onUrlBlocked.add(call.arguments['url']);
+        break;
+
     }
   }
 
@@ -62,6 +69,9 @@ class FlutterWebviewPlugin {
 
   /// Listening url changed
   Stream<String> get onUrlChanged => _onUrlChanged.stream;
+
+  /// Listening url blocked
+  Stream<String> get onUrlBlocked => _onUrlBlocked.stream;
 
   /// Listening the onState Event for iOS WebView and Android
   /// content is Map for type: {shouldStart(iOS)|startLoad|finishLoad}
@@ -188,6 +198,9 @@ class FlutterWebviewPlugin {
     _onScrollXChanged.close();
     _onScrollYChanged.close();
     _onHttpError.close();
+
+    _onUrlBlocked.close();
+
     _instance = null;
   }
 

@@ -97,6 +97,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   StreamSubscription<double> _onScrollXChanged;
 
+  StreamSubscription<String> _onUrlBlocked;
+
   final _urlCtrl = TextEditingController(text: selectedUrl);
 
   final _codeCtrl = TextEditingController(text: 'window.navigator.userAgent');
@@ -128,6 +130,15 @@ class _MyHomePageState extends State<MyHomePage> {
       if (mounted) {
         setState(() {
           _history.add('onUrlChanged: $url');
+        });
+      }
+    });
+
+    _onUrlBlocked = flutterWebViewPlugin.onUrlBlocked.listen((String url) {
+      print('+++ URL was blocked: $url');
+      if (mounted) {
+        setState(() {
+          _history.add('onUrlBlocked: $url');
         });
       }
     });
@@ -170,6 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // Every listener should be canceled, the same should be done with this stream.
     _onDestroy.cancel();
     _onUrlChanged.cancel();
+    _onUrlBlocked.cancel();
     _onStateChanged.cancel();
     _onHttpError.cancel();
     _onScrollXChanged.cancel();
